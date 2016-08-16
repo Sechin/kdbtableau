@@ -6,11 +6,6 @@ from settings import server, app
 
 def get_request(url):
     response = urllib.urlopen(url)
-    #data = json.loads(response.read())
-    #return data
-    #response.headers['Access-Control-Allow-Origin'] = '*'
-    #response.headers['Access-Control-Allow-Methods'] = 'PUT, GET, POST, DELETE, OPTIONS'
-    #response.headers['Access-Control-Allow-Headers'] = 'Origin, Accept, Content-Type, X-Requested-With, X-CSRF-Token'
     return response.read()
 
 @route('/odbc/', method='GET')

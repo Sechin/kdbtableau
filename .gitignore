@@ -8,4 +8,5 @@
 out
 .gitignore
 initrepository.bat
-
+src/static/vendors
+/src/settings.py

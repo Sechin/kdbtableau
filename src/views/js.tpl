@@ -6,7 +6,7 @@
     <title>KDB JSON API</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script type="text/javascript" src="{{tableau_url}}javascripts/api/tableau-2.js"></script>
-    <script type="text/javascript" src="/static/js/kdbtableau.js"></script>
+    <script type="text/javascript" src="/static/resources/js/kdbtableau.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
 </head>
 <body>
