@@ -23,7 +23,12 @@ def pg():
 
 @route('/' , method='GET')
 def js():
-    return template("js",{'kdb_url': app['local']+'kdb/','tableau_url':app['tableau'],'local_url':app['local']})
+    if (app['version'] == 2):
+        return template("v2/main",
+                        {'kdb_url': app['local'] + 'kdb/', 'tableau_url': app['tableau'], 'local_url': app['local']})
+    else:
+        return template("js",
+                        {'kdb_url': app['local'] + 'kdb/', 'tableau_url': app['tableau'], 'local_url': app['local']})
 
 
 @route('/kdb/<query>', method='GET')
