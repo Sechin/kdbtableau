@@ -1,4 +1,5 @@
 var mapViz = undefined, mapSheet = undefined;
+var statViz = undefined, statSheet = undefined;
 
 function initTree() {
     $('#left-tree').jstree({
@@ -73,17 +74,36 @@ function getMap(id) {
             hideTabs: true,
             hideToolbar: true,
             onFirstInteractive: function () {
-                mapSheet = viz1.getWorkbook().getActiveSheet();
+                mapSheet = mapViz.getWorkbook().getActiveSheet();
             }
         };
         var el = document.getElementById("right-map");
-        var url = siteCfg.tableau_url + siteCfg.tableau.statistics_path + "&par1=" + id;
+        var url = siteCfg.tableau_url + siteCfg.tableau.map_path + "&par1=" + id;
         mapViz = new tableau.Viz(el, url, options);
     } else {
+        //TODO Change parameter in mapViz to id
         mapViz.refreshDataAsync();
+    }
+}
+
+function getStatistics() {
+    if (statViz == undefined) {
+        var options = {
+            hideTabs: true,
+            hideToolbar: true,
+            onFirstInteractive: function () {
+                statSheet = statViz.getWorkbook().getActiveSheet();
+            }
+        };
+        var el = document.getElementById("left-statistic-form");
+        var url = siteCfg.tableau_url + siteCfg.tableau.statistics_path;
+        statViz = new tableau.Viz(el, url, options);
+    } else {
+        statViz.refreshDataAsync();
     }
 }
 
 $().ready(function () {
     initTree();
+    getStatistics();
 });

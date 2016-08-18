@@ -3,8 +3,10 @@ var siteCfg = {
     kdb_url: '',
     tableau_url: '',
     tableau: {
-        statistics_path: '#/views/JS_Fast/rtDataPostgress?:refresh=yes',
-        map_path: '#/views/JS_Fast/rtDataPostgress?:refresh=yes'
+        statistics_path: '#/views/JS_01/kdbStatistics',
+        map_path: '#/views/JS_Fast/rtDataPostgress?:refresh=yes',//TODO
+        table_path: '#/views/JS_Fast/rtDataPostgress?:refresh=yes',//TODO
+        graph_path: '#/views/JS_Fast/rtDataPostgress?:refresh=yes'//TODO
     },
     init: function (local_url, kdb_url, tableau_url) {
         this.local_url = local_url;

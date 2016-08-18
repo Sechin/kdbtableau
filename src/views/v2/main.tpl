@@ -43,13 +43,13 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-sm-3">
-            <div id="left-tree">left-tree</div>
-            <div id="left-statistic-form" style="width:200px; height:300px;">left-statistic-form</div>
+            <div id="left-tree"></div>
+            <div id="left-statistic-form"></div>
         </div>
         <div class="col-sm-9">
             <h4 id="selected-node"></h4>
 
-            <div id="right-map" style="width:800px; height:400px; ">right-map</div>
+            <div id="right-map"></div>
             <div id="right-data-form">right-data-form</div>
         </div>
     </div>
