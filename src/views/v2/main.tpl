@@ -6,7 +6,10 @@
     <title>Tableau KDB Energy</title>
     <script src="/static/vendors/jquery/dist/jquery.min.js"></script>
     <script type="text/javascript" src="/static/resources/js/kdbtableau.js"></script>
-    <link rel="stylesheet" href="/static/vendors/bootstrap/dist/css/bootstrap.min.css">
+    <script type="text/javascript" src="{{ tableau_url }}javascripts/api/tableau-2.js"></script>
+    <link rel="stylesheet" href="/static/vendors/bootstrap/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="/static/vendors/jstree/dist/themes/default/style.min.css"/>
+    <link rel="stylesheet" href="/static/resources/css/site.css"/>
 </head>
 <body>
 
@@ -37,12 +40,30 @@
     <!-- /.container -->
 </nav>
 
-
 <div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-3">
+            <div id="left-tree">left-tree</div>
+            <div id="left-statistic-form" style="width:200px; height:300px;">left-statistic-form</div>
+        </div>
+        <div class="col-sm-9">
+            <h4 id="selected-node"></h4>
+
+            <div id="right-map" style="width:800px; height:400px; ">right-map</div>
+            <div id="right-data-form">right-data-form</div>
+        </div>
+    </div>
 </div>
 
-
 <script src="/static/vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="/static/vendors/jstree/dist/jstree.js"></script>
+
+<script src="/static/resources/js/initsite.js"></script>
+<script>
+    siteCfg.init('{{local_url}}', '{{kdb_url}}', '{{tableau_url}}');
+</script>
+<script src="/static/resources/js/site.js"></script>
+
 
 </body>
 </html>
