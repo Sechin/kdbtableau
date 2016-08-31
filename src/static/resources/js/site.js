@@ -1,5 +1,5 @@
-var mapViz = undefined, mapSheet = undefined;
-var statViz = undefined, statSheet = undefined;
+//var mapViz = undefined, mapSheet = undefined;
+//var statViz = undefined, statSheet = undefined;
 
 function initTree() {
     $('#left-tree').jstree({
@@ -64,46 +64,53 @@ function initTree() {
         "plugins": ["sort", "types", "wholerow", "dnd", "search", "changed"]
     }).on("changed.jstree", function (e, data) {
         $('#selected-node').text(data.node.text);
-        getMap(data.node.id);
+        getSheet(data.node.id, frames.rtMap);
+        getSheet(data.node.id, frames.rtTab);
     });
 }
 
-function getMap(id) {
-    if (mapViz == undefined) {
+function getSheet(id, viz) {
+    if (viz.v == undefined) {
         var options = {
             hideTabs: true,
-            hideToolbar: true,
+            hideToolbar: true/*,
             onFirstInteractive: function () {
-                mapSheet = mapViz.getWorkbook().getActiveSheet();
-            }
+             viz.s = viz.v.getWorkbook().getActiveSheet();
+             }*/
         };
-        var el = document.getElementById("right-map");
-        var url = siteCfg.tableau_url + siteCfg.tableau.map_path + "&par1=" + id;
-        mapViz = new tableau.Viz(el, url, options);
+        var el = document.getElementById(viz.o);
+        var url = siteCfg.tableau_url + viz.p + "&par1=" + id;
+        viz.v = new tableau.Viz(el, url, options);
     } else {
-        //TODO Change parameter in mapViz to id
-        mapViz.refreshDataAsync();
+        viz.v.getWorkbook().changeParameterValueAsync("par1", id)
+            .then(function () {
+                if (siteCfg.auto_refresh)
+                    viz.v.refreshDataAsync();
+            })
+            .otherwise(function (err) {
+                alert('getMap failed: ' + err);
+            });
     }
 }
 
-function getStatistics() {
-    if (statViz == undefined) {
+function getStatistics(viz) {
+    if (viz.v == undefined) {
         var options = {
             hideTabs: true,
-            hideToolbar: true,
+            hideToolbar: true/*,
             onFirstInteractive: function () {
-                statSheet = statViz.getWorkbook().getActiveSheet();
-            }
+             viz.s = viz.v.getWorkbook().getActiveSheet();
+             }*/
         };
-        var el = document.getElementById("left-statistic-form");
-        var url = siteCfg.tableau_url + siteCfg.tableau.statistics_path;
-        statViz = new tableau.Viz(el, url, options);
+        var el = document.getElementById(viz.o);
+        var url = siteCfg.tableau_url + viz.p;
+        viz.v = new tableau.Viz(el, url, options);
     } else {
-        statViz.refreshDataAsync();
+        viz.v.refreshDataAsync();
     }
 }
 
 $().ready(function () {
     initTree();
-    getStatistics();
+    getStatistics(frames.stat);
 });

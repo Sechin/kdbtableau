@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <meta name="kdb-tableau-energy" version="2.0" content="KDB Tableau Technology Demonstration Project">
+    <meta name="kdb-tableau-energy" content="KDB Tableau Technology Demonstration Project">
     <title>Tableau KDB Energy</title>
     <script src="/static/vendors/jquery/dist/jquery.min.js"></script>
     <script type="text/javascript" src="/static/resources/js/kdbtableau.js"></script>
     <script type="text/javascript" src="{{ tableau_url }}javascripts/api/tableau-2.js"></script>
-    <link rel="stylesheet" href="/static/vendors/bootstrap/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="/static/vendors/bootstrap/dist/css/bootstrap.css"/>
     <link rel="stylesheet" href="/static/vendors/jstree/dist/themes/default/style.min.css"/>
     <link rel="stylesheet" href="/static/resources/css/site.css"/>
 </head>
@@ -44,13 +44,53 @@
     <div class="row">
         <div class="col-sm-3">
             <div id="left-tree"></div>
-            <div id="left-statistic-form"></div>
         </div>
         <div class="col-sm-9">
-            <h4 id="selected-node"></h4>
+            <div class="row">
+                <div class="col-sm-9">
+                    <h4 id="selected-node"><< Please, select a consumer</h4>
 
-            <div id="right-map"></div>
-            <div id="right-data-form">right-data-form</div>
+                    <div id="right-map"></div>
+                </div>
+                <div class="col-sm-3">
+                    <h4>System Statistics</h4>
+
+                    <div id="statistic-form"></div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div id="right-data-tabs" class="container nopadding">
+                        <ul class="nav nav-pills">
+                            <li class="active">
+                                <a href="#sheet-rt-tab" data-toggle="tab">Current Data</a>
+                            </li>
+                            <li><a href="#sheet-rt-chart" data-toggle="tab">Current Chart</a>
+                            </li>
+                            <li><a href="#sheet-ar-tab" data-toggle="tab">Archive Data</a>
+                            </li>
+                            <li><a href="#sheet-ar-chart" data-toggle="tab">Archive Chart</a>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content clearfix">
+                            <div class="tab-pane active" id="sheet-rt-tab">
+                                <div id="right-rt-tab"></div>
+                            </div>
+                            <div class="tab-pane" id="sheet-rt-chart">
+                                <div id="right-rt-chart"></div>
+                            </div>
+                            <div class="tab-pane" id="sheet-ar-tab">
+                                <div id="right-ar-tab"></div>
+                            </div>
+                            <div class="tab-pane" id="sheet-ar-chart">
+                                <div id="right-ar-chart"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
