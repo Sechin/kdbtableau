@@ -31,7 +31,7 @@
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav navbar-right">
                 <li class="">
-                    <a href="{{tableau_url}}#/workbooks/34/views">Tableau</a>
+                    <a href="{{ tableau_url }}#/workbooks/39/views">Tableau</a>
                 </li>
             </ul>
         </div>
@@ -49,7 +49,6 @@
             <div class="row">
                 <div class="col-sm-9">
                     <h4 id="selected-node"><< Please, select a consumer</h4>
-
                     <div id="right-map"></div>
                 </div>
                 <div class="col-sm-3">

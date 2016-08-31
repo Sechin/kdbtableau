@@ -64,8 +64,14 @@ function initTree() {
         "plugins": ["sort", "types", "wholerow", "dnd", "search", "changed"]
     }).on("changed.jstree", function (e, data) {
         $('#selected-node').text(data.node.text);
-        getSheet(data.node.id, frames.rtMap);
-        getSheet(data.node.id, frames.rtTab);
+        getSheet(data.node.id, t_panels.rtMap);
+        $.each(t_panels, function (index, val) {
+            if (val.hasOwnProperty("o")) {
+                var s = $('#' + val.o);
+                if (s.parents('#right-data-tabs').length && s.parent().hasClass('active'))
+                    getSheet(data.node.id, val);
+            }
+        });
     });
 }
 
@@ -88,7 +94,7 @@ function getSheet(id, viz) {
                     viz.v.refreshDataAsync();
             })
             .otherwise(function (err) {
-                alert('getMap failed: ' + err);
+                alert('Get data for ' + viz.o + ' failed: ' + err);
             });
     }
 }
@@ -112,5 +118,5 @@ function getStatistics(viz) {
 
 $().ready(function () {
     initTree();
-    getStatistics(frames.stat);
+    getStatistics(t_panels.stat);
 });

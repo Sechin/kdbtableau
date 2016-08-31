@@ -12,7 +12,7 @@ var siteCfg = {
 
 };
 
-var frames = {
+var t_panels = {
     stat: {
         id: -1,
         v: undefined,
@@ -41,14 +41,14 @@ var frames = {
         p: '#/views/EnergyDemoTree/arTab?:refresh=yes',
         o: 'right-ar-tab'
     },
-    rtGraph: {
+    rtChart: {
         id: -1,
         v: undefined,
         s: undefined,
         p: '#/views/EnergyDemoTree/rtChart?:refresh=yes',
         o: 'right-rt-chart'
     },
-    arGraph: {
+    arChart: {
         id: -1,
         v: undefined,
         s: undefined,

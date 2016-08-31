@@ -16,7 +16,7 @@
     height: 400px;
 }
 
-#right-rt-tab {
+#right-rt-tab, #right-rt-chart, #right-ar-tab, #right-ar-chart {
     width: 100%;
     height: 400px;
 }
