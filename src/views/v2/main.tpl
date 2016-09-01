@@ -65,8 +65,10 @@
                             <li class="active">
                                 <a href="#sheet-rt-tab" data-toggle="tab">Current Data</a>
                             </li>
-                            <li><a href="#sheet-rt-chart" data-toggle="tab">Current Chart</a>
-                            </li>
+                            <!--
+                                                        <li><a href="#sheet-rt-chart" data-toggle="tab">Current Chart</a>
+                                                        </li>
+                            -->
                             <li><a href="#sheet-ar-tab" data-toggle="tab">Archive Data</a>
                             </li>
                             <li><a href="#sheet-ar-chart" data-toggle="tab">Archive Chart</a>
@@ -75,16 +77,18 @@
 
                         <div class="tab-content clearfix">
                             <div class="tab-pane active" id="sheet-rt-tab">
-                                <div id="right-rt-tab"></div>
+                                <div id="rt-tab" class="right-tabs-sheet"></div>
                             </div>
-                            <div class="tab-pane" id="sheet-rt-chart">
-                                <div id="right-rt-chart"></div>
-                            </div>
+                            <!--
+                                                        <div class="tab-pane" id="sheet-rt-chart">
+                                                            <div id="rt-chart" class="right-tabs-sheet"></div>
+                                                        </div>
+                            -->
                             <div class="tab-pane" id="sheet-ar-tab">
-                                <div id="right-ar-tab"></div>
+                                <div id="ar-tab" class="right-tabs-sheet"></div>
                             </div>
                             <div class="tab-pane" id="sheet-ar-chart">
-                                <div id="right-ar-chart"></div>
+                                <div id="ar-chart" class="right-tabs-sheet"></div>
                             </div>
                         </div>
                     </div>
