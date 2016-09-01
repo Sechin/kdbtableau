@@ -53,7 +53,6 @@
                 </div>
                 <div class="col-sm-3">
                     <h4>System Statistics</h4>
-
                     <div id="statistic-form"></div>
                 </div>
             </div>

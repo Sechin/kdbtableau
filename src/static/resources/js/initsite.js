@@ -17,7 +17,7 @@ var t_panels = {
         id: -1,
         v: undefined,
         w: false,
-        p: '#/views/JS_01/kdbStatistics',
+        p: '#/views/EnergyDemoTree/kdbStatistics?:refresh=yes',
         o: 'statistic-form'
     },
     rtMap: {
