@@ -76,10 +76,6 @@ body {
     background: #555555;
 }
 
-body {
-    scrollbar-track-color: #686868;
-}
-
 ::-webkit-scrollbar {
     width: 12px;
     background: #686868;
