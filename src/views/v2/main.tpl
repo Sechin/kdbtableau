@@ -7,7 +7,7 @@
     <script src="/static/vendors/jquery/dist/jquery.min.js"></script>
     <script type="text/javascript" src="/static/resources/js/kdbtableau.js"></script>
     <script type="text/javascript" src="{{ tableau_url }}javascripts/api/tableau-2.js"></script>
-    <link rel="stylesheet" href="/static/vendors/bootstrap/dist/css/bootstrap.css"/>
+    <link rel="stylesheet" href="/static/vendors/bootstrap/dist/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="/static/vendors/jstree/dist/themes/default/style.min.css"/>
     <link rel="stylesheet" href="/static/resources/css/site.css"/>
 </head>

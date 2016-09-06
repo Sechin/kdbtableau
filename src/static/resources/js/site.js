@@ -40,20 +40,20 @@ function initTree() {
                 "valid_children": [""]
             },
             "country": {
-                //"icon" : "./images/country.png",
+                "icon": "/static/resources/image/country.png"
                 //"valid_children" : ["field"]
             },
             "region": {
-                //"icon" : "./images/region.png",
+                "icon": "/static/resources/image/region.png"
             },
             "city": {
-                //"icon" : "./images/city.png",
+                "icon": "/static/resources/image/city.png"
             },
             "street": {
-                //"icon" : "./images/street.png",
+                "icon": "/static/resources/image/street.png"
             },
             "building": {
-                //"icon" : "./images/building.png",
+                "icon": "/static/resources/image/building.png",
                 "max_children": 0
             },
             "default": {
