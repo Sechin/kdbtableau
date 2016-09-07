@@ -33,6 +33,13 @@
                 <li class="">
                     <a href="{{ tableau_url }}#/workbooks/39/views">Tableau</a>
                 </li>
+                <li id="nav-connect" class="">
+                    <a href="#">Connect</a>
+                </li>
+                <li id="nav-refresh" class="">
+                    <a href="#">Refresh</a>
+                </li>
+
             </ul>
         </div>
         <!-- /.navbar-collapse -->

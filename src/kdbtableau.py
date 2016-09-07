@@ -26,6 +26,10 @@ def js():
                         {'kdb_url': app['local'] + 'kdb/', 'tableau_url': app['tableau'], 'local_url': app['local']})
 
 
+@route('/connect', method='GET')
+def kdb_connect():
+    return get_request(app['tableau'] + 'webdataconnectors/mw.html')
+
 @route('/kdb/<query>', method='GET')
 def kdb_index(query):
     return get_request(app['kdb']+query)

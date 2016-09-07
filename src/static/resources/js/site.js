@@ -104,12 +104,15 @@ function getSheet(id, viz) {
         var el = document.getElementById(viz.o);
         var url = siteCfg.tableau_url + viz.p + "&par1=" + id + datUrlPart(viz);
         viz.v = new tableau.Viz(el, url, options);
+        viz.id = id;
     } else {
         if (viz.w) {
             viz.v.getWorkbook().changeParameterValueAsync("par1", id)
                 .then(function () {
-                    if (siteCfg.auto_refresh)
+                    if (viz.id == id) {
                         viz.v.refreshDataAsync();
+                    }
+                    viz.id = id;
                 })
                 .otherwise(function (err) {
                     alert('Get data for ' + viz.o + ' failed: ' + err);
@@ -149,8 +152,67 @@ function addTabsEvents() {
     });
 }
 
+function setAutoRefreshRt() {
+    if (siteCfg.refresh.rt.id) {
+        clearInterval(siteCfg.refresh.rt.id);
+        siteCfg.refresh.rt.id = {};
+    }
+    if (siteCfg.refresh.rt.v > 0) {
+        siteCfg.refresh.rt.id = setInterval(function () {
+            getSheet(undefined, t_panels.rtMap);
+            getSheet(undefined, t_panels.rtTab);
+        }, siteCfg.refresh.rt.v);
+    }
+}
+
+function setConnect() {
+    $("#nav-connect").on("click", "a", null, function () {
+        $.ajax({
+            url: siteCfg.local_url + 'connect',
+            error: function (jqXHR, textStatus, errorThrown) {
+                alert(textStatus);
+            }
+        }).done(function (a) {
+            alert(a);
+        }).fail(function (err) {
+            alert(err);
+        });
+
+        var iframe = $("#frameDemo");
+        if (iframe) {
+            document.getElementById('frameDemo').contentWindow.ff($("#connectinfo"));
+        }
+
+    });
+}
+
+function setAutoRefreshStat() {
+    if (siteCfg.refresh.stat.id) {
+        clearInterval(siteCfg.refresh.stat.id);
+        siteCfg.refresh.stat.id = {};
+    }
+    if (siteCfg.refresh.stat.v > 0) {
+        siteCfg.refresh.stat.id = setInterval(function () {
+            getStatistics(t_panels.stat);
+        }, siteCfg.refresh.stat.v);
+    }
+}
+
+function setRefresh() {
+    $("#nav-refresh").on("click", "a", null, function () {
+        getStatistics(t_panels.stat);
+        getSheet(undefined, t_panels.rtMap);
+        getSheet(undefined, t_panels.rtTab);
+    });
+    setAutoRefreshStat();
+    setAutoRefreshRt();
+}
+
+
 $().ready(function () {
     initTree();
     getStatistics(t_panels.stat);
     addTabsEvents();
+    setRefresh();
+    //setConnect();
 });

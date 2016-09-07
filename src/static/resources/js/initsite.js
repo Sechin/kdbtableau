@@ -2,7 +2,16 @@ var siteCfg = {
     local_url: '',
     kdb_url: '',
     tableau_url: '',
-    auto_refresh: false,
+    refresh: {
+        stat: {
+            v: 5000,
+            id: {}
+        },
+        rt: {
+            v: 0,
+            id: {}
+        }
+    },
     init: function (local_url, kdb_url, tableau_url) {
         this.local_url = local_url;
         this.kdb_url = kdb_url;
