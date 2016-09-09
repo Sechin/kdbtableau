@@ -1,12 +1,15 @@
 __author__ = 'Oleksandr'
 
-import urllib
-from bottle import route, run, template, static_file
+import sys, logging
+
+if sys.version_info < (3, 0):
+    from utl2 import get_request
+else:
+    from utl3 import get_request
+
+from bottle import route, run, template, static_file, default_app
 from settings import server, app
 
-def get_request(url):
-    response = urllib.urlopen(url)
-    return response.read()
 
 @route('/odbc/', method='GET')
 def odbc():
@@ -56,5 +59,13 @@ def consumers(id):
         id = '-1'
     return get_consumer(id)
 
-run(host=server['host'], port=server['port'])
-# print get_request('http://'+hostname+':'+str(port)+'/kdb/')
+
+# Runner
+logging.basicConfig(filename=server['logFile'], level=server['logLevel'])
+
+if server['service']:
+    if __name__ == '__main__':
+        run(host=server['ihost'], port=server['iport'], reloader=server['reloader'], debug=server['bottleDebug'])
+    extApp = default_app()
+else:
+    run(host=server['ihost'], port=server['iport'], reloader=server['reloader'], debug=server['bottleDebug'])

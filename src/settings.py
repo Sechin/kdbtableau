@@ -1,9 +1,17 @@
 __author__ = 'Oleksandr'
 
 server = dict(
+    # external address
     host='localhost',
-    # hostname = '192.168.186.175'
-    port=8082
+    port=8082,
+    # internal address
+    ihost='localhost',
+    iport=8082,
+    service=False,  # run as service
+    reloader=True,  # Auto Reload Files for Development Configuration
+    bottleDebug=False,  # Run Bottle in debug mode
+    logFile='',
+    logLevel=0  # Logging level (notset:0, debug: 10,info: 20,warning: 30,error: 40,critical:50)
 )
 
 app = dict(

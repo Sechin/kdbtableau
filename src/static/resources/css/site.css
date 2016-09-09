@@ -11,6 +11,19 @@
     height: 250px;
 }
 
+#statistic-form2 {
+    font-size: 11px;
+}
+
+.table-p2{
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
+
+.table-p2>tbody>tr>td, .table-p2>tbody>tr>th, .table-p2>tfoot>tr>td, .table-p2>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th{
+    padding: 2px 2px;
+}
+
 #right-map {
     width: 100%;
     height: 400px;

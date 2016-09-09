@@ -128,15 +128,48 @@ function getStatistics(viz) {
             hideToolbar: true,
             onFirstInteractive: function () {
                 viz.w = true;
+                switch (viz.v.getWorkbook().getActiveSheet().getSheetType()) {
+                    case 'worksheet':
+                        viz.s = viz.v.getWorkbook().getActiveSheet();
+                        break;
+                    case 'dashboard':
+                        viz.s = viz.v.getWorkbook().getActiveSheet().getWorksheets()[0];
+                }
+                getData(viz);
             }
         };
         var el = document.getElementById(viz.o);
         var url = siteCfg.tableau_url + viz.p;
         viz.v = new tableau.Viz(el, url, options);
     } else {
-        if (viz.w)
-            viz.v.refreshDataAsync();
+        if (viz.w) {
+            viz.v.refreshDataAsync()
+                .then(function () {
+                    getData(viz);
+                });
+        }
     }
+}
+
+function getData(viz) {
+    var opt = {
+        maxRows: 0,
+        ignoreAliases: false,
+        ignoreSelection: true,
+        includeAllColumns: false
+    };
+    viz.s.getUnderlyingDataAsync(opt).then(function (t) {
+        $("#" + viz.o + "2").html(getStatisticsHtml(t.getData()));
+    });
+}
+
+function getStatisticsHtml(d) {
+    var s = "<table class=\"table table-bordered table-p2\">";
+    for (i = 0; i < d.length; i++) {
+        s = s + "<tr><td>" + d[i][0].value + "</td><td>" + d[i][1].value + "</td></tr>";
+    }
+    s = s + "</table>";
+    return s;
 }
 
 function addTabsEvents() {
@@ -209,10 +242,41 @@ function setRefresh() {
 }
 
 
+function signIn() {
+    var SERVERURL = "217.12.204.182:8000";
+    var USER = "ItlAdmin";
+    var PASS = "TabKDB33itl";
+    $('#frame')[0].contentWindow.postMessage
+    (
+        JSON.stringify
+        (
+            {
+                "url": "http://" + SERVERURL + "/api/2.0/auth/signin",
+                "dataType": "xml",
+                "type": "POST",
+                "data": "<tsRequest><credentials name=\"" + USER + "\" password=\"" + PASS + "\" ><site contentUrl=\"\" /></credentials></tsRequest>"
+            }),
+        "http://" + SERVERURL + "/"
+    );
+    // console.log($("#frame").contents().find('html'));
+    window.addEventListener("message", receiveMessage, false);
+    function receiveMessage(data, event) {
+        //console.log(data.data);
+        var xml = $.parseXML(data.data);
+        var result = $(xml).find("credentials").attr('token');
+        console.log(result);
+        //$.cookie("X-tableau-auth", result);
+        //document.cookie = "XSRF-TOKEN="+result;
+    }
+}
+
+
+
 $().ready(function () {
     initTree();
     getStatistics(t_panels.stat);
     addTabsEvents();
     setRefresh();
+    //signIn();
     //setConnect();
 });

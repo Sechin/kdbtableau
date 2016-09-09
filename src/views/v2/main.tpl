@@ -54,13 +54,21 @@
         </div>
         <div class="col-sm-9">
             <div class="row">
-                <div class="col-sm-9">
+                <div class="col-sm-7">
                     <h4 id="selected-node"><< Please, select a consumer</h4>
                     <div id="right-map"></div>
                 </div>
-                <div class="col-sm-3">
+                <div class="col-sm-5">
                     <h4>System Statistics</h4>
-                    <div id="statistic-form"></div>
+
+                    <div class="row">
+                        <div class="col-sm-7">
+                            <div id="statistic-form"></div>
+                        </div>
+                        <div class="col-sm-5">
+                            <div id="statistic-form2"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -103,6 +111,9 @@
         </div>
     </div>
 </div>
+
+<iframe src="http://217.12.204.182:8000/webdataconnectors/get_token.html" id="frame"
+        style="visibility:hidden;display:none"></iframe>
 
 <script src="/static/vendors/bootstrap/dist/js/bootstrap.min.js"></script>
 <script src="/static/vendors/jstree/dist/jstree.js"></script>
