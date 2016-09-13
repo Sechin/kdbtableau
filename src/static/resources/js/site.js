@@ -99,20 +99,35 @@ function getSheet(id, viz) {
             hideToolbar: true,
             onFirstInteractive: function () {
                 viz.w = true;
+                if (viz.hasOwnProperty("ownCtr") && viz.ownCtr) {
+                    switch (viz.v.getWorkbook().getActiveSheet().getSheetType()) {
+                        case 'worksheet':
+                            viz.s = viz.v.getWorkbook().getActiveSheet();
+                            break;
+                        case 'dashboard':
+                            viz.s = viz.v.getWorkbook().getActiveSheet().getWorksheets()[0];
+                    }
+                    viz.id = id;
+                    getData(viz);
+                }
             }
         };
         var el = document.getElementById(viz.o);
         var url = siteCfg.tableau_url + viz.p + "&par1=" + id + datUrlPart(viz);
         viz.v = new tableau.Viz(el, url, options);
-        viz.id = id;
     } else {
         if (viz.w) {
             viz.v.getWorkbook().changeParameterValueAsync("par1", id)
                 .then(function () {
                     if (viz.id == id) {
-                        viz.v.refreshDataAsync();
+                        viz.v.refreshDataAsync()
+                            .then(function () {
+                                getData(viz);
+                            });
+                    } else {
+                        viz.id = id;
+                        getData(viz);
                     }
-                    viz.id = id;
                 })
                 .otherwise(function (err) {
                     alert('Get data for ' + viz.o + ' failed: ' + err);
@@ -135,23 +150,26 @@ function getStatistics(viz) {
                     case 'dashboard':
                         viz.s = viz.v.getWorkbook().getActiveSheet().getWorksheets()[0];
                 }
-                getData(viz);
+                getStatData(viz);
             }
         };
         var el = document.getElementById(viz.o);
-        var url = siteCfg.tableau_url + viz.p;
+        var url = siteCfg.tableau_url + siteCfg.ticket + viz.p;
         viz.v = new tableau.Viz(el, url, options);
     } else {
         if (viz.w) {
             viz.v.refreshDataAsync()
                 .then(function () {
-                    getData(viz);
+                    getStatData(viz);
                 });
         }
     }
 }
 
 function getData(viz) {
+    if (!viz.hasOwnProperty("ownCtr") || !viz.ownCtr)
+        return;
+
     var opt = {
         maxRows: 0,
         ignoreAliases: false,
@@ -159,18 +177,108 @@ function getData(viz) {
         includeAllColumns: false
     };
     viz.s.getUnderlyingDataAsync(opt).then(function (t) {
-        $("#" + viz.o + "2").html(getStatisticsHtml(t.getData()));
+        var s = $("#" + viz.o + "2");
+        var refreshOk = false;
+        var cfg = viz.hasOwnProperty("cfg") ? viz.cfg : null;
+        if (s.length && cfg != null && cfg.idColPos >= 0 && viz.id == s.attr('pid')) { //replace data
+            var d = t.getData();
+            for (var i = 0; i < d.length; i++) {//by rows
+                var dat = viz.tb.row("#" + viz.o + "-2t-rid-" + d[i][cfg.idColPos].value).data();
+                for (var j = 0; j < cfg.cols.length; j++) {
+                    var k = cfg.cols[j].i;
+                    if (k > -1) {
+                        var v = "";
+                        if (cfg.cols[j].f > -1) {
+                            v = "" + parseFloat(d[i][k].value).toFixed(cfg.cols[j].f)
+                        } else
+                            v = "" + d[i][k].value;
+                        dat[j] = v;
+                        refreshOk = true;
+                    } else {
+                        refreshOk = false;
+                        break;
+                    }
+                }
+                if (refreshOk)
+                    viz.tb.row("#" + viz.o + "-2t-rid-" + d[i][cfg.idColPos].value).data(dat).draw();
+                else
+                    break;
+            }
+        }
+        if (refreshOk) {
+            viz.tb.rows().draw();
+        } else {
+            s.attr('pid', -2);
+            s.html(getHtml(viz, t.getData(), t.getColumns()));
+            viz.tb = $("#" + viz.o + "-2t").DataTable();
+            s.attr('pid', viz.id);
+        }
     });
 }
 
-function getStatisticsHtml(d) {
-    var s = "<table class=\"table table-bordered table-p2\">";
-    for (i = 0; i < d.length; i++) {
-        s = s + "<tr><td>" + d[i][0].value + "</td><td>" + d[i][1].value + "</td></tr>";
+function getStatData(viz) {
+    var opt = {
+        maxRows: 0,
+        ignoreAliases: false,
+        ignoreSelection: true,
+        includeAllColumns: false
+    };
+    viz.s.getUnderlyingDataAsync(opt).then(function (t) {
+        var s = $("#" + viz.o + "2");
+        s.attr('pid', -2);
+        s.html(getHtml(viz, t.getData(), t.getColumns()));
+        viz.tb = $("#" + viz.o + "-2t").DataTable({
+            'searching': false,
+            'ordering': false,
+            'info': false,
+            'paging': false
+        });
+        s.attr('pid', viz.id);
+    });
+}
+
+function getHtml(viz, d, col) {
+    var i, j, idPos = -1;
+    var s = "<table id=\"" + viz.o + "-2t\" class=\"table table-p2 display\">";
+    var cfg = viz.hasOwnProperty("cfg") ? viz.cfg : null;
+    var check = (cfg != null);
+    if (check) {
+        cfg.configure(col);
+        s = s + "<thead><tr>";
+        for (i = 0; i < cfg.cols.length; i++) {
+            s = s + "<th>" + cfg.cols[i].n + "</th>";
+        }
+        s = s + "</thead></tr>";
     }
-    s = s + "</table>";
+    s = s + "<tbody>";
+    for (i = 0; i < d.length; i++) {
+        if (check && cfg.idColPos >= 0)
+            s = s + "<tr id=\"" + viz.o + "-2t-rid-" + d[i][cfg.idColPos].value + "\">"
+        else
+            s = s + "<tr>"
+        if (check) {
+            for (j = 0; j < cfg.cols.length; j++) {
+                var k = cfg.cols[j].i;
+                var v = "";
+                if (k > -1) {
+                    if (cfg.cols[j].f > -1) {
+                        v = "" + parseFloat(d[i][k].value).toFixed(cfg.cols[j].f)
+                    } else
+                        v = "" + d[i][k].value;
+                }
+                s = s + "<td>" + v + "</td>";
+            }
+        } else {
+            for (j = 0; j < d[i].length; j++) {
+                s = s + "<td>" + d[i][j].value + "</td>";
+            }
+        }
+        s = s + "</tr>"
+    }
+    s = s + "</tbody></table>";
     return s;
 }
+
 
 function addTabsEvents() {
     $.each(t_panels, function (index, val) {
@@ -192,8 +300,10 @@ function setAutoRefreshRt() {
     }
     if (siteCfg.refresh.rt.v > 0) {
         siteCfg.refresh.rt.id = setInterval(function () {
-            getSheet(undefined, t_panels.rtMap);
-            getSheet(undefined, t_panels.rtTab);
+            if (siteCfg.refresh.rt.map)
+                getSheet(undefined, t_panels.rtMap);
+            if (siteCfg.refresh.rt.tab)
+                getSheet(undefined, t_panels.rtTab);
         }, siteCfg.refresh.rt.v);
     }
 }

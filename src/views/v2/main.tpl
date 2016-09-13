@@ -9,6 +9,7 @@
     <script type="text/javascript" src="{{ tableau_url }}javascripts/api/tableau-2.js"></script>
     <link rel="stylesheet" href="/static/vendors/bootstrap/dist/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="/static/vendors/jstree/dist/themes/default/style.min.css"/>
+    <link rel="stylesheet" href="/static/vendors/dataTables/css/dataTables.bootstrap.min.css"/>
     <link rel="stylesheet" href="/static/resources/css/site.css"/>
 </head>
 <body>
@@ -64,9 +65,9 @@
                     <div class="row">
                         <div class="col-sm-7">
                             <div id="statistic-form"></div>
+                            <div id="statistic-form2"></div>
                         </div>
                         <div class="col-sm-5">
-                            <div id="statistic-form2"></div>
                         </div>
                     </div>
                 </div>
@@ -92,6 +93,9 @@
                         <div class="tab-content clearfix">
                             <div class="tab-pane active" id="sheet-rt-tab">
                                 <div id="rt-tab" class="right-tabs-sheet"></div>
+                                <div id="rt-tab2" class="right-tabs-sheet2">
+                                    <table id="rt-tab2t"></table>
+                                </div>
                             </div>
                             <!--
                                                         <div class="tab-pane" id="sheet-rt-chart">
@@ -117,6 +121,9 @@
 
 <script src="/static/vendors/bootstrap/dist/js/bootstrap.min.js"></script>
 <script src="/static/vendors/jstree/dist/jstree.js"></script>
+
+<script src="/static/vendors/dataTables/js/jquery.dataTables.min.js"></script>
+<script src="/static/vendors/dataTables/js/dataTables.bootstrap.min.js"></script>
 
 <script src="/static/resources/js/initsite.js"></script>
 <script>
