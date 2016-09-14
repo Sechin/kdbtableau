@@ -1,11 +1,14 @@
 __author__ = 'Oleksandr'
 
-import sys, logging
+import sys
 
 if sys.version_info < (3, 0):
     from utl2 import get_request
 else:
     from utl3 import get_request
+
+import logging
+import requests
 
 from bottle import route, run, template, static_file, default_app
 from settings import server, app
@@ -58,6 +61,23 @@ def consumers(id):
     if (id == '' or id == '#'):
         id = '-1'
     return get_consumer(id)
+
+
+@route('/getticket/', method='GET')
+def get_ticket():
+    r = requests.post(app['tableau'] + 'trusted/', data={'username': app['tableauuser']},
+                      headers={"Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"})
+
+    if r.status_code == 200:
+        if r.text != '-1':
+            ticketID = str(r.text)
+            logging.debug('TicketID=' + ticketID)
+            return ticketID
+        else:
+            logging.error("Error, something with connection")
+    else:
+        logging.error('Could not get trusted ticket with status code:' + str(r.status_code))
+    return "#"
 
 
 # Runner

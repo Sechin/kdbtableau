@@ -1,5 +1,3 @@
-//var mapViz = undefined, mapSheet = undefined;
-//var statViz = undefined, statSheet = undefined;
 
 function initTree() {
     $('#left-tree').jstree({
@@ -62,6 +60,9 @@ function initTree() {
         },
         "plugins": ["sort", "types", "wholerow", "dnd", "search", "changed"]
     }).on("changed.jstree", function (e, data) {
+        if (data.node == undefined)
+            return;
+        stopAutoRefreshRt();
         $('#selected-node').text(data.node.text).attr('node_id', data.node.id);
         getSheet(data.node.id, t_panels.rtMap);
         $.each(t_panels, function (index, val) {
@@ -71,6 +72,10 @@ function initTree() {
                     getSheet(data.node.id, val);
             }
         });
+        startAutoRefreshRt();
+    }).on('loaded.jstree', function (e, data) {
+        $(this).jstree('select_node', 'ul > li:first');
+        $(this).jstree('open_node', 'ul > li:first');
     });
 }
 
@@ -94,27 +99,32 @@ function getSheet(id, viz) {
     if (id == undefined || id < -1)
         return;
     if (viz.v == undefined) {
-        var options = {
-            hideTabs: true,
-            hideToolbar: true,
-            onFirstInteractive: function () {
-                viz.w = true;
-                if (viz.hasOwnProperty("ownCtr") && viz.ownCtr) {
-                    switch (viz.v.getWorkbook().getActiveSheet().getSheetType()) {
-                        case 'worksheet':
-                            viz.s = viz.v.getWorkbook().getActiveSheet();
-                            break;
-                        case 'dashboard':
-                            viz.s = viz.v.getWorkbook().getActiveSheet().getWorksheets()[0];
+        $.ajax({
+            url: siteCfg.local_url + "getticket/",
+            type: 'GET'
+        }).done(function (ticket) {
+            var options = {
+                hideTabs: true,
+                hideToolbar: true,
+                onFirstInteractive: function () {
+                    viz.w = true;
+                    if (viz.hasOwnProperty("ownCtr") && viz.ownCtr) {
+                        switch (viz.v.getWorkbook().getActiveSheet().getSheetType()) {
+                            case 'worksheet':
+                                viz.s = viz.v.getWorkbook().getActiveSheet();
+                                break;
+                            case 'dashboard':
+                                viz.s = viz.v.getWorkbook().getActiveSheet().getWorksheets()[0];
+                        }
+                        viz.id = id;
+                        getData(viz);
                     }
-                    viz.id = id;
-                    getData(viz);
                 }
-            }
-        };
-        var el = document.getElementById(viz.o);
-        var url = siteCfg.tableau_url + viz.p + "&par1=" + id + datUrlPart(viz);
-        viz.v = new tableau.Viz(el, url, options);
+            };
+            var el = document.getElementById(viz.o);
+            var url = siteCfg.tableau_url + ((ticket == "#") ? ticket : "trusted/" + ticket) + viz.p + "&par1=" + id + datUrlPart(viz);
+            viz.v = new tableau.Viz(el, url, options);
+        })
     } else {
         if (viz.w) {
             viz.v.getWorkbook().changeParameterValueAsync("par1", id)
@@ -138,24 +148,29 @@ function getSheet(id, viz) {
 
 function getStatistics(viz) {
     if (viz.v == undefined) {
-        var options = {
-            hideTabs: true,
-            hideToolbar: true,
-            onFirstInteractive: function () {
-                viz.w = true;
-                switch (viz.v.getWorkbook().getActiveSheet().getSheetType()) {
-                    case 'worksheet':
-                        viz.s = viz.v.getWorkbook().getActiveSheet();
-                        break;
-                    case 'dashboard':
-                        viz.s = viz.v.getWorkbook().getActiveSheet().getWorksheets()[0];
+        $.ajax({
+            url: siteCfg.local_url + "getticket/",
+            type: 'GET'
+        }).done(function (ticket) {
+            var options = {
+                hideTabs: true,
+                hideToolbar: true,
+                onFirstInteractive: function () {
+                    viz.w = true;
+                    switch (viz.v.getWorkbook().getActiveSheet().getSheetType()) {
+                        case 'worksheet':
+                            viz.s = viz.v.getWorkbook().getActiveSheet();
+                            break;
+                        case 'dashboard':
+                            viz.s = viz.v.getWorkbook().getActiveSheet().getWorksheets()[0];
+                    }
+                    getStatData(viz);
                 }
-                getStatData(viz);
-            }
-        };
-        var el = document.getElementById(viz.o);
-        var url = siteCfg.tableau_url + siteCfg.ticket + viz.p;
-        viz.v = new tableau.Viz(el, url, options);
+            };
+            var el = document.getElementById(viz.o);
+            var url = siteCfg.tableau_url + ((ticket == "#") ? ticket : "trusted/" + ticket) + viz.p;
+            viz.v = new tableau.Viz(el, url, options);
+        })
     } else {
         if (viz.w) {
             viz.v.refreshDataAsync()
@@ -180,34 +195,10 @@ function getData(viz) {
         var s = $("#" + viz.o + "2");
         var refreshOk = false;
         var cfg = viz.hasOwnProperty("cfg") ? viz.cfg : null;
-        if (s.length && cfg != null && cfg.idColPos >= 0 && viz.id == s.attr('pid')) { //replace data
-            var d = t.getData();
-            for (var i = 0; i < d.length; i++) {//by rows
-                var dat = viz.tb.row("#" + viz.o + "-2t-rid-" + d[i][cfg.idColPos].value).data();
-                for (var j = 0; j < cfg.cols.length; j++) {
-                    var k = cfg.cols[j].i;
-                    if (k > -1) {
-                        var v = "";
-                        if (cfg.cols[j].f > -1) {
-                            v = "" + parseFloat(d[i][k].value).toFixed(cfg.cols[j].f)
-                        } else
-                            v = "" + d[i][k].value;
-                        dat[j] = v;
-                        refreshOk = true;
-                    } else {
-                        refreshOk = false;
-                        break;
-                    }
-                }
-                if (refreshOk)
-                    viz.tb.row("#" + viz.o + "-2t-rid-" + d[i][cfg.idColPos].value).data(dat).draw();
-                else
-                    break;
-            }
+        if (cfg != null && cfg.idColPos >= 0 && viz.id == s.attr('pid')) { //replace data
+            refreshOk = updateHtml(viz, t.getData())
         }
-        if (refreshOk) {
-            viz.tb.rows().draw();
-        } else {
+        if (!refreshOk) {
             s.attr('pid', -2);
             s.html(getHtml(viz, t.getData(), t.getColumns()));
             viz.tb = $("#" + viz.o + "-2t").DataTable();
@@ -235,6 +226,28 @@ function getStatData(viz) {
         });
         s.attr('pid', viz.id);
     });
+}
+
+function updateHtml(viz, d) {
+    var cfg = viz.cfg;
+    for (var i = 0; i < d.length; i++) {//by rows
+        var dat = viz.tb.row("#" + viz.o + "-2t-rid-" + d[i][cfg.idColPos].value).data();
+        for (var j = 0; j < cfg.cols.length; j++) {
+            var k = cfg.cols[j].i;
+            if (k > -1) {
+                var v = "";
+                if (cfg.cols[j].f > -1) {
+                    v = "" + parseFloat(d[i][k].value).toFixed(cfg.cols[j].f)
+                } else
+                    v = "" + d[i][k].value;
+                dat[j] = v;
+            } else
+                return false;
+        }
+        viz.tb.row("#" + viz.o + "-2t-rid-" + d[i][cfg.idColPos].value).data(dat).draw();
+    }
+    viz.tb.rows().draw();
+    return true;
 }
 
 function getHtml(viz, d, col) {
@@ -286,98 +299,81 @@ function addTabsEvents() {
             var s = $('#' + val.o);
             if (s.parents('#right-data-tabs').length) {
                 $("a[href='#sheet-" + val.o + "']").on('shown.bs.tab', function () {
+                    stopAutoRefreshRt();
                     getSheet(undefined, val);
+                    startAutoRefreshRt();
                 });
             }
         }
     });
 }
 
-function setAutoRefreshRt() {
+function stopAutoRefreshRt() {
     if (siteCfg.refresh.rt.id) {
         clearInterval(siteCfg.refresh.rt.id);
         siteCfg.refresh.rt.id = {};
     }
+}
+
+function startAutoRefreshRt() {
     if (siteCfg.refresh.rt.v > 0) {
         siteCfg.refresh.rt.id = setInterval(function () {
-            if (siteCfg.refresh.rt.map)
-                getSheet(undefined, t_panels.rtMap);
             if (siteCfg.refresh.rt.tab)
                 getSheet(undefined, t_panels.rtTab);
+            if (siteCfg.refresh.rt.map)
+                getSheet(undefined, t_panels.rtMap);
         }, siteCfg.refresh.rt.v);
     }
 }
 
-function setConnect() {
-    $("#nav-connect").on("click", "a", null, function () {
-        $.ajax({
-            url: siteCfg.local_url + 'connect',
-            error: function (jqXHR, textStatus, errorThrown) {
-                alert(textStatus);
-            }
-        }).done(function (a) {
-            alert(a);
-        }).fail(function (err) {
-            alert(err);
-        });
-
-        var iframe = $("#frameDemo");
-        if (iframe) {
-            document.getElementById('frameDemo').contentWindow.ff($("#connectinfo"));
-        }
-
-    });
+function setAutoRefreshRt() {
+    stopAutoRefreshRt();
+    startAutoRefreshRt();
 }
 
-function setAutoRefreshStat() {
+function stopAutoRefreshStat() {
     if (siteCfg.refresh.stat.id) {
         clearInterval(siteCfg.refresh.stat.id);
         siteCfg.refresh.stat.id = {};
     }
+}
+
+function startAutoRefreshStat() {
     if (siteCfg.refresh.stat.v > 0) {
-        siteCfg.refresh.stat.id = setInterval(function () {
+        siteCfg.refresh.stat.id = setInterval(function run() {
             getStatistics(t_panels.stat);
         }, siteCfg.refresh.stat.v);
     }
 }
 
-function setRefresh() {
-    $("#nav-refresh").on("click", "a", null, function () {
-        getStatistics(t_panels.stat);
-        getSheet(undefined, t_panels.rtMap);
-        getSheet(undefined, t_panels.rtTab);
-    });
+function setAutoRefreshStat() {
+    stopAutoRefreshStat();
+    startAutoRefreshStat();
+}
+
+function setAutoRefresh() {
     setAutoRefreshStat();
     setAutoRefreshRt();
 }
 
+function startAutoRefresh() {
+    startAutoRefreshStat();
+    startAutoRefreshRt();
+}
 
-function signIn() {
-    var SERVERURL = "217.12.204.182:8000";
-    var USER = "ItlAdmin";
-    var PASS = "TabKDB33itl";
-    $('#frame')[0].contentWindow.postMessage
-    (
-        JSON.stringify
-        (
-            {
-                "url": "http://" + SERVERURL + "/api/2.0/auth/signin",
-                "dataType": "xml",
-                "type": "POST",
-                "data": "<tsRequest><credentials name=\"" + USER + "\" password=\"" + PASS + "\" ><site contentUrl=\"\" /></credentials></tsRequest>"
-            }),
-        "http://" + SERVERURL + "/"
-    );
-    // console.log($("#frame").contents().find('html'));
-    window.addEventListener("message", receiveMessage, false);
-    function receiveMessage(data, event) {
-        //console.log(data.data);
-        var xml = $.parseXML(data.data);
-        var result = $(xml).find("credentials").attr('token');
-        console.log(result);
-        //$.cookie("X-tableau-auth", result);
-        //document.cookie = "XSRF-TOKEN="+result;
-    }
+function stopAutoRefresh() {
+    stopAutoRefreshStat();
+    stopAutoRefreshRt();
+}
+
+function setRefresh() {
+    $("#nav-refresh").on("click", "a", null, function () {
+        stopAutoRefresh();
+        getStatistics(t_panels.stat);
+        getSheet(undefined, t_panels.rtMap);
+        getSheet(undefined, t_panels.rtTab);
+        startAutoRefresh();
+    });
 }
 
 
@@ -387,6 +383,5 @@ $().ready(function () {
     getStatistics(t_panels.stat);
     addTabsEvents();
     setRefresh();
-    //signIn();
-    //setConnect();
+    setAutoRefresh();
 });

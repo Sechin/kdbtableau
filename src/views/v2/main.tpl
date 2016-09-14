@@ -34,9 +34,6 @@
                 <li class="">
                     <a href="{{ tableau_url }}#/workbooks/39/views">Tableau</a>
                 </li>
-                <li id="nav-connect" class="">
-                    <a href="#">Connect</a>
-                </li>
                 <li id="nav-refresh" class="">
                     <a href="#">Refresh</a>
                 </li>
@@ -115,9 +112,6 @@
         </div>
     </div>
 </div>
-
-<iframe src="http://217.12.204.182:8000/webdataconnectors/get_token.html" id="frame"
-        style="visibility:hidden;display:none"></iframe>
 
 <script src="/static/vendors/bootstrap/dist/js/bootstrap.min.js"></script>
 <script src="/static/vendors/jstree/dist/jstree.js"></script>

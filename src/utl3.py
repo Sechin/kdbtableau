@@ -1,7 +1,9 @@
 __author__ = 'Oleksandr'
 
 from urllib.parse import urlparse
-import socket, sys, logging
+import socket
+import sys
+import logging
 
 
 def get_request(url):

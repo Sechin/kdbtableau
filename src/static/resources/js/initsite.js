@@ -14,7 +14,6 @@ var siteCfg = {
             id: {}
         }
     },
-    ticket: '',
     init: function (local_url, kdb_url, tableau_url) {
         this.local_url = local_url;
         this.kdb_url = kdb_url;
@@ -156,24 +155,24 @@ var t_panels = {
         id: -1,
         v: undefined,
         w: false,
-        p: '#/views/EnergyDemoTree/kdbStatistics?:refresh=yes',
+        p: '/views/EnergyDemoTree/kdbStatistics?:refresh=yes',
         o: 'statistic-form',
+        ownCtr: true
+    },
+    rtTab: {
+        id: -1,
+        v: undefined,
+        w: false,
+        p: '/views/EnergyDemoTree/rtTab?:refresh=yes',
+        o: 'rt-tab',
         ownCtr: true
     },
     rtMap: {
         id: -1,
         v: undefined,
         w: false,
-        p: '#/views/EnergyDemoTree/rtMap?:refresh=yes',
+        p: '/views/EnergyDemoTree/rtMap?:refresh=yes',
         o: 'right-map'
-    },
-    rtTab: {
-        id: -1,
-        v: undefined,
-        w: false,
-        p: '#/views/EnergyDemoTree/rtTab?:refresh=yes',
-        o: 'rt-tab',
-        ownCtr: true
     },
     /*    rtChart: {
      id: -1,
@@ -186,7 +185,7 @@ var t_panels = {
         id: -1,
         v: undefined,
         w: false,
-        p: '#/views/EnergyDemoTree/arTab?:refresh=yes&archtype=1',
+        p: '/views/EnergyDemoTree/arTab?:refresh=yes&archtype=1',
         o: 'ar-tab',
         dat: true
     },
@@ -194,7 +193,7 @@ var t_panels = {
         id: -1,
         v: undefined,
         w: false,
-        p: '#/views/EnergyDemoTree/arChart?:refresh=yes&archtype=1',
+        p: '/views/EnergyDemoTree/arChart?:refresh=yes&archtype=1',
         o: 'ar-chart',
         dat: true
     }
