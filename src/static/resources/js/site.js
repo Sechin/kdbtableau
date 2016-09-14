@@ -73,7 +73,7 @@ function initTree() {
             }
         });
         startAutoRefreshRt();
-    }).on('loaded.jstree', function (e, data) {
+    }).on('loaded.jstree', function () {
         $(this).jstree('select_node', 'ul > li:first');
         $(this).jstree('open_node', 'ul > li:first');
     });
@@ -108,7 +108,7 @@ function getSheet(id, viz) {
                 hideToolbar: true,
                 onFirstInteractive: function () {
                     viz.w = true;
-                    if (viz.hasOwnProperty("ownCtr") && viz.ownCtr) {
+                    if (viz.ownCtr) {
                         switch (viz.v.getWorkbook().getActiveSheet().getSheetType()) {
                             case 'worksheet':
                                 viz.s = viz.v.getWorkbook().getActiveSheet();
@@ -182,7 +182,7 @@ function getStatistics(viz) {
 }
 
 function getData(viz) {
-    if (!viz.hasOwnProperty("ownCtr") || !viz.ownCtr)
+    if (!viz.ownCtr)
         return;
 
     var opt = {
@@ -194,8 +194,7 @@ function getData(viz) {
     viz.s.getUnderlyingDataAsync(opt).then(function (t) {
         var s = $("#" + viz.o + "2");
         var refreshOk = false;
-        var cfg = viz.hasOwnProperty("cfg") ? viz.cfg : null;
-        if (cfg != null && cfg.idColPos >= 0 && viz.id == s.attr('pid')) { //replace data
+        if (viz.cfg != null && viz.cfg.idColPos >= 0 && viz.id == s.attr('pid')) { //replace data
             refreshOk = updateHtml(viz, t.getData())
         }
         if (!refreshOk) {
@@ -220,7 +219,7 @@ function getStatData(viz) {
         s.html(getHtml(viz, t.getData(), t.getColumns()));
         viz.tb = $("#" + viz.o + "-2t").DataTable({
             'searching': false,
-            'ordering': false,
+
             'info': false,
             'paging': false
         });
@@ -251,11 +250,10 @@ function updateHtml(viz, d) {
 }
 
 function getHtml(viz, d, col) {
-    var i, j, idPos = -1;
-    var s = "<table id=\"" + viz.o + "-2t\" class=\"table table-p2 display\">";
-    var cfg = viz.hasOwnProperty("cfg") ? viz.cfg : null;
-    var check = (cfg != null);
-    if (check) {
+    var i, j;
+    var s = "<table id=\"" + viz.o + "-2t\" class=\"table table-p2 display table-striped table-hover\">";
+    var cfg = viz.cfg;
+    if (cfg != null) {
         cfg.configure(col);
         s = s + "<thead><tr>";
         for (i = 0; i < cfg.cols.length; i++) {
@@ -265,17 +263,17 @@ function getHtml(viz, d, col) {
     }
     s = s + "<tbody>";
     for (i = 0; i < d.length; i++) {
-        if (check && cfg.idColPos >= 0)
-            s = s + "<tr id=\"" + viz.o + "-2t-rid-" + d[i][cfg.idColPos].value + "\">"
+        if (cfg != null && cfg.idColPos >= 0)
+            s = s + "<tr id=\"" + viz.o + "-2t-rid-" + d[i][cfg.idColPos].value + "\">";
         else
-            s = s + "<tr>"
-        if (check) {
+            s = s + "<tr>";
+        if (cfg != null) {
             for (j = 0; j < cfg.cols.length; j++) {
                 var k = cfg.cols[j].i;
                 var v = "";
                 if (k > -1) {
                     if (cfg.cols[j].f > -1) {
-                        v = "" + parseFloat(d[i][k].value).toFixed(cfg.cols[j].f)
+                        v = "" + parseFloat(d[i][k].value).toFixed(cfg.cols[j].f);
                     } else
                         v = "" + d[i][k].value;
                 }

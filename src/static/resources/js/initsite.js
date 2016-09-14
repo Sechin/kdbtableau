@@ -52,7 +52,7 @@ var func_def = {
             }
         }
     }
-}
+};
 
 var cfg_stat = {
     name: 'System Statistics',
@@ -152,52 +152,55 @@ var cfg_rt = {
 
 var t_panels = {
     stat: {
-        id: -1,
-        v: undefined,
-        w: false,
         p: '/views/EnergyDemoTree/kdbStatistics?:refresh=yes',
         o: 'statistic-form',
         ownCtr: true
     },
     rtTab: {
-        id: -1,
-        v: undefined,
-        w: false,
         p: '/views/EnergyDemoTree/rtTab?:refresh=yes',
         o: 'rt-tab',
         ownCtr: true
     },
     rtMap: {
-        id: -1,
-        v: undefined,
-        w: false,
         p: '/views/EnergyDemoTree/rtMap?:refresh=yes',
         o: 'right-map'
     },
     /*    rtChart: {
-     id: -1,
-     v: undefined,
-     w: false,
      p: '#/views/EnergyDemoTree/rtChart?:refresh=yes',
      o: 'rt-chart'
      },*/
     arTab: {
-        id: -1,
-        v: undefined,
-        w: false,
         p: '/views/EnergyDemoTree/arTab?:refresh=yes&archtype=1',
         o: 'ar-tab',
         dat: true
     },
     arChart: {
-        id: -1,
-        v: undefined,
-        w: false,
         p: '/views/EnergyDemoTree/arChart?:refresh=yes&archtype=1',
         o: 'ar-chart',
         dat: true
     }
 };
 
+
+/*  Main code */
 t_panels.stat.cfg = cfg_stat;
 t_panels.rtTab.cfg = cfg_rt;
+for (var o in t_panels) {
+    if (t_panels.hasOwnProperty(o) && typeof t_panels[o] !== "function") {
+        var e = t_panels[o];
+        if (!e.hasOwnProperty('dat'))
+            e.dat = false;
+        if (!e.hasOwnProperty('useId'))
+            e.useId = false;
+        if (!e.hasOwnProperty('ownCtr'))
+            e.ownCtr = false;
+        if (!e.hasOwnProperty('id'))
+            e.id = -1;
+        if (!e.hasOwnProperty('v'))
+            e.v = undefined;
+        if (!e.hasOwnProperty('w'))
+            e.w = false;
+        if (!e.hasOwnProperty('cfg'))
+            e.cfg = null;
+    }
+}

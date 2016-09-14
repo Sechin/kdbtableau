@@ -9,6 +9,7 @@
     <script type="text/javascript" src="{{ tableau_url }}javascripts/api/tableau-2.js"></script>
     <link rel="stylesheet" href="/static/vendors/bootstrap/dist/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="/static/vendors/jstree/dist/themes/default/style.min.css"/>
+    <!-- <link rel="stylesheet" href="/static/vendors/dataTables/css/jquery.dataTables.min.css"/> -->
     <link rel="stylesheet" href="/static/vendors/dataTables/css/dataTables.bootstrap.min.css"/>
     <link rel="stylesheet" href="/static/resources/css/site.css"/>
 </head>
@@ -58,7 +59,6 @@
                 </div>
                 <div class="col-sm-5">
                     <h4>System Statistics</h4>
-
                     <div class="row">
                         <div class="col-sm-7">
                             <div id="statistic-form"></div>
@@ -91,7 +91,8 @@
                             <div class="tab-pane active" id="sheet-rt-tab">
                                 <div id="rt-tab" class="right-tabs-sheet"></div>
                                 <div id="rt-tab2" class="right-tabs-sheet2">
-                                    <table id="rt-tab2t"></table>
+                                    <table id="rt-tab-2t"></table>
+                                    <!--This will replace by js -->
                                 </div>
                             </div>
                             <!--
