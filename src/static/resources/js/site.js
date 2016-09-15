@@ -373,6 +373,13 @@ function setRefresh() {
     });
 }
 
+function initChosen() {
+    $("#syms-selector").chosen({
+        placeholder_text_multiple: 'Select Instruments...',
+        max_selected_options: 3
+    });
+}
+
 var pageStarter = {
     energyReady: function () {
         $().ready(function () {
@@ -384,9 +391,8 @@ var pageStarter = {
         });
     },
     financeReady: function () {
-        $("#syms-selector").chosen({
-            placeholder_text_multiple: 'Select Instruments...',
-            max_selected_options: 3
+        $().ready(function () {
+            initChosen();
         });
     }
 }
