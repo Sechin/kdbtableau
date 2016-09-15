@@ -1,4 +1,5 @@
 __author__ = 'Oleksandr'
+# Loaded only fo python, ver<3
 
 import logging
 import sys

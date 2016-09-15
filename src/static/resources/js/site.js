@@ -1,4 +1,3 @@
-
 function initTree() {
     $('#left-tree').jstree({
         'core': {
@@ -374,12 +373,20 @@ function setRefresh() {
     });
 }
 
-
-
-$().ready(function () {
-    initTree();
-    getStatistics(t_panels.stat);
-    addTabsEvents();
-    setRefresh();
-    setAutoRefresh();
-});
+var pageStarter = {
+    energyReady: function () {
+        $().ready(function () {
+            initTree();
+            getStatistics(t_panels.stat);
+            addTabsEvents();
+            setRefresh();
+            setAutoRefresh();
+        });
+    },
+    financeReady: function () {
+        $("#syms-selector").chosen({
+            placeholder_text_multiple: 'Select Instruments...',
+            max_selected_options: 3
+        });
+    }
+}

@@ -66,3 +66,8 @@
     padding-left: 0 !important;
     margin: 0 !important;
 }
+
+/*Finance*/
+#syms-selector {
+    width: 400px;
+}
