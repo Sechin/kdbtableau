@@ -2,10 +2,10 @@ __author__ = 'Oleksandr'
 
 server = dict(
     # external address
-    host='192.168.186.175',
+    host='192.168.186.44',
     port=8082,
     # internal address
-    ihost='192.168.186.175',
+    ihost='192.168.186.44',
     iport=8082,
     service=False,  # run as service
     reloader=True,  # Auto Reload Files for Development Configuration

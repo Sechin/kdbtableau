@@ -61,17 +61,14 @@ function initTree() {
     }).on("changed.jstree", function (e, data) {
         if (data.node == undefined)
             return;
-        stopAutoRefreshRt();
         $('#selected-node').text(data.node.text).attr('node_id', data.node.id);
-        getSheet(data.node.id, t_panels.rtMap);
         $.each(t_panels, function (index, val) {
-            if (val.hasOwnProperty("o")) {
+            if (typeof val !== "function" && val.hasOwnProperty("o") && val.useId) {
                 var s = $('#' + val.o);
-                if (s.parents('#right-data-tabs').length && s.parent().hasClass('active'))
+                if (!s.parents('#right-data-tabs').length || s.parent().hasClass('active'))
                     getSheet(data.node.id, val);
             }
         });
-        startAutoRefreshRt();
     }).on('loaded.jstree', function () {
         $(this).jstree('select_node', 'ul > li:first');
         $(this).jstree('open_node', 'ul > li:first');
@@ -93,11 +90,8 @@ function datUrlPart(viz) {
 }
 
 function getSheet(id, viz) {
-    if (id == undefined || id < -1)
-        id = $('#selected-node').attr('node_id');
-    if (id == undefined || id < -1)
-        return;
-    if (viz.v == undefined) {
+    var par1 = (id >= -1) ? id : undefined;
+    if (viz.v == undefined && (!viz.useId || par1 != undefined)) {
         $.ajax({
             url: siteCfg.local_url + "getticket/",
             type: 'GET'
@@ -115,74 +109,44 @@ function getSheet(id, viz) {
                             case 'dashboard':
                                 viz.s = viz.v.getWorkbook().getActiveSheet().getWorksheets()[0];
                         }
-                        viz.id = id;
+                        viz.id = par1;
                         getData(viz);
                     }
                 }
             };
             var el = document.getElementById(viz.o);
-            var url = siteCfg.tableau_url + ((ticket == "#") ? ticket : "trusted/" + ticket) + viz.p + "&par1=" + id + datUrlPart(viz);
+            var url = siteCfg.tableau_url + ((ticket == "#") ? ticket : "trusted/" + ticket) + viz.p + (viz.useId ? ("&par1=" + par1) : "") + datUrlPart(viz);
             viz.v = new tableau.Viz(el, url, options);
         })
     } else {
         if (viz.w) {
-            viz.v.getWorkbook().changeParameterValueAsync("par1", id)
-                .then(function () {
-                    if (viz.id == id) {
-                        viz.v.refreshDataAsync()
-                            .then(function () {
-                                getData(viz);
-                            });
-                    } else {
-                        viz.id = id;
+            if (viz.useId && par1 != undefined) {
+                viz.v.getWorkbook().changeParameterValueAsync("par1", par1)
+                    .then(function () {
+                        viz.id = par1;
                         getData(viz);
-                    }
-                })
-                .otherwise(function (err) {
-                    alert('Get data for ' + viz.o + ' failed: ' + err);
-                });
-        }
-    }
-}
-
-function getStatistics(viz) {
-    if (viz.v == undefined) {
-        $.ajax({
-            url: siteCfg.local_url + "getticket/",
-            type: 'GET'
-        }).done(function (ticket) {
-            var options = {
-                hideTabs: true,
-                hideToolbar: true,
-                onFirstInteractive: function () {
-                    viz.w = true;
-                    switch (viz.v.getWorkbook().getActiveSheet().getSheetType()) {
-                        case 'worksheet':
-                            viz.s = viz.v.getWorkbook().getActiveSheet();
-                            break;
-                        case 'dashboard':
-                            viz.s = viz.v.getWorkbook().getActiveSheet().getWorksheets()[0];
-                    }
-                    getStatData(viz);
+                    })
+                    .otherwise(function (err) {
+                        alert('Get data for ' + viz.o + ' failed: ' + err);
+                    });
+            } else {
+                if (viz.canRefresh) {
+                    viz.canRefresh = false;
+                    viz.v.refreshDataAsync()
+                        .then(function () {
+                            getData(viz);
+                        });
                 }
-            };
-            var el = document.getElementById(viz.o);
-            var url = siteCfg.tableau_url + ((ticket == "#") ? ticket : "trusted/" + ticket) + viz.p;
-            viz.v = new tableau.Viz(el, url, options);
-        })
-    } else {
-        if (viz.w) {
-            viz.v.refreshDataAsync()
-                .then(function () {
-                    getStatData(viz);
-                });
+            }
         }
     }
 }
 
 function getData(viz) {
-    if (!viz.ownCtr)
+    if (!viz.ownCtr) {
+        viz.canRefresh = true;
         return;
+    }
 
     var opt = {
         maxRows: 0,
@@ -193,36 +157,16 @@ function getData(viz) {
     viz.s.getUnderlyingDataAsync(opt).then(function (t) {
         var s = $("#" + viz.o + "2");
         var refreshOk = false;
-        if (viz.cfg != null && viz.cfg.idColPos >= 0 && viz.id == s.attr('pid')) { //replace data
+        if (viz.cfg != null && viz.cfg.idColPos >= 0 && (!viz.useId || (viz.useId && viz.id == s.attr('pid')))) { //replace data
             refreshOk = updateHtml(viz, t.getData())
         }
         if (!refreshOk) {
             s.attr('pid', -2);
             s.html(getHtml(viz, t.getData(), t.getColumns()));
-            viz.tb = $("#" + viz.o + "-2t").DataTable();
+            viz.tb = $("#" + viz.o + "-2t").DataTable(viz.attrDT);
             s.attr('pid', viz.id);
         }
-    });
-}
-
-function getStatData(viz) {
-    var opt = {
-        maxRows: 0,
-        ignoreAliases: false,
-        ignoreSelection: true,
-        includeAllColumns: false
-    };
-    viz.s.getUnderlyingDataAsync(opt).then(function (t) {
-        var s = $("#" + viz.o + "2");
-        s.attr('pid', -2);
-        s.html(getHtml(viz, t.getData(), t.getColumns()));
-        viz.tb = $("#" + viz.o + "-2t").DataTable({
-            'searching': false,
-
-            'info': false,
-            'paging': false
-        });
-        s.attr('pid', viz.id);
+        viz.canRefresh = true;
     });
 }
 
@@ -289,87 +233,40 @@ function getHtml(viz, d, col) {
     return s;
 }
 
-
 function addTabsEvents() {
     $.each(t_panels, function (index, val) {
-        if (val.hasOwnProperty("o")) {
-            var s = $('#' + val.o);
-            if (s.parents('#right-data-tabs').length) {
+        if (typeof val !== "function" && val.hasOwnProperty("o")) {
+            if (val.useId && $('#' + val.o).parents('#right-data-tabs').length) {
                 $("a[href='#sheet-" + val.o + "']").on('shown.bs.tab', function () {
-                    stopAutoRefreshRt();
-                    getSheet(undefined, val);
-                    startAutoRefreshRt();
+                    if ($('#' + val.o).parent().hasClass('active'))
+                        getSheet($('#selected-node').attr('node_id'), val);
                 });
             }
         }
     });
 }
 
-function stopAutoRefreshRt() {
-    if (siteCfg.refresh.rt.id) {
-        clearInterval(siteCfg.refresh.rt.id);
-        siteCfg.refresh.rt.id = {};
-    }
-}
-
-function startAutoRefreshRt() {
-    if (siteCfg.refresh.rt.v > 0) {
-        siteCfg.refresh.rt.id = setInterval(function () {
-            if (siteCfg.refresh.rt.tab)
-                getSheet(undefined, t_panels.rtTab);
-            if (siteCfg.refresh.rt.map)
-                getSheet(undefined, t_panels.rtMap);
-        }, siteCfg.refresh.rt.v);
-    }
-}
-
-function setAutoRefreshRt() {
-    stopAutoRefreshRt();
-    startAutoRefreshRt();
-}
-
-function stopAutoRefreshStat() {
-    if (siteCfg.refresh.stat.id) {
-        clearInterval(siteCfg.refresh.stat.id);
-        siteCfg.refresh.stat.id = {};
-    }
-}
-
-function startAutoRefreshStat() {
-    if (siteCfg.refresh.stat.v > 0) {
-        siteCfg.refresh.stat.id = setInterval(function run() {
-            getStatistics(t_panels.stat);
-        }, siteCfg.refresh.stat.v);
-    }
-}
-
-function setAutoRefreshStat() {
-    stopAutoRefreshStat();
-    startAutoRefreshStat();
-}
-
 function setAutoRefresh() {
-    setAutoRefreshStat();
-    setAutoRefreshRt();
-}
-
-function startAutoRefresh() {
-    startAutoRefreshStat();
-    startAutoRefreshRt();
-}
-
-function stopAutoRefresh() {
-    stopAutoRefreshStat();
-    stopAutoRefreshRt();
+    $.each(t_panels, function (index, val) {
+        if (typeof val !== "function" && val.hasOwnProperty("o")) {
+            if (val.rt.v > 0) {
+                val.rt.id = setInterval(function () {
+                    getSheet(undefined, val);
+                }, val.rt.v);
+            }
+        }
+    });
 }
 
 function setRefresh() {
     $("#nav-refresh").on("click", "a", null, function () {
-        stopAutoRefresh();
-        getStatistics(t_panels.stat);
-        getSheet(undefined, t_panels.rtMap);
-        getSheet(undefined, t_panels.rtTab);
-        startAutoRefresh();
+        $.each(t_panels, function (index, val) {
+            if (typeof val !== "function" && val.hasOwnProperty("o")) {
+                var s = $('#' + val.o);
+                if (!s.parents('#right-data-tabs').length || s.parent().hasClass('active'))
+                    getSheet(undefined, val);
+            }
+        });
     });
 }
 
@@ -384,7 +281,6 @@ var pageStarter = {
     energyReady: function () {
         $().ready(function () {
             initTree();
-            getStatistics(t_panels.stat);
             addTabsEvents();
             setRefresh();
             setAutoRefresh();

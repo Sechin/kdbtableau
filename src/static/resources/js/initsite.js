@@ -2,18 +2,6 @@ var siteCfg = {
     local_url: '',
     kdb_url: '',
     tableau_url: '',
-    refresh: {
-        stat: {
-            v: 5000,
-            id: {}
-        },
-        rt: {
-            v: 5000,
-            tab: true,
-            map: false,
-            id: {}
-        }
-    },
     init: function (local_url, kdb_url, tableau_url) {
         this.local_url = local_url;
         this.kdb_url = kdb_url;
@@ -68,6 +56,8 @@ var cfg_stat = {
             f: -1
         }
     ],
+    idColName: "id",
+    idColPos: -1,
     init: func_def.init,
     configure: func_def.configure
 };
@@ -154,11 +144,25 @@ var t_panels = {
     stat: {
         p: '/views/EnergyDemoTree/kdbStatistics?:refresh=yes',
         o: 'statistic-form',
-        ownCtr: true
+        rt: {
+            v: 1000,
+            id: {}
+        },
+        useId: false,
+        ownCtr: true,
+        attrDT: {
+            'searching': false,
+            'info': false,
+            'paging': false
+        }
     },
     rtTab: {
         p: '/views/EnergyDemoTree/rtTab?:refresh=yes',
         o: 'rt-tab',
+        rt: {
+            v: 1000,
+            id: {}
+        },
         ownCtr: true
     },
     rtMap: {
@@ -191,7 +195,7 @@ for (var o in t_panels) {
         if (!e.hasOwnProperty('dat'))
             e.dat = false;
         if (!e.hasOwnProperty('useId'))
-            e.useId = false;
+            e.useId = true;
         if (!e.hasOwnProperty('ownCtr'))
             e.ownCtr = false;
         if (!e.hasOwnProperty('id'))
@@ -202,5 +206,10 @@ for (var o in t_panels) {
             e.w = false;
         if (!e.hasOwnProperty('cfg'))
             e.cfg = null;
+        if (!e.hasOwnProperty('rt'))
+            e.rt = {v: 0, id: {}}
+        if (!e.hasOwnProperty('attrDT'))
+            e.attrDT = {}
+        e.canRefresh = true;
     }
 }
