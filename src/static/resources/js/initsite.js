@@ -210,6 +210,7 @@ for (var o in t_panels) {
             e.rt = {v: 0, id: {}}
         if (!e.hasOwnProperty('attrDT'))
             e.attrDT = {}
-        e.canRefresh = true;
+        if (!e.hasOwnProperty('canRefresh'))
+            e.canRefresh = true;
     }
 }
