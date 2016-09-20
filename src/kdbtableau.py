@@ -17,7 +17,8 @@ from settings import server, app
 def def_page_info():
     return {'title': '', 'content': 'KDB Tableau Technology Demonstration Project', 'starter': '',
             'kdb_url': app['local'], 'tableau_url': app['tableau'], 'local_url': app['local'],
-            'js': {'tableau': False, 'jstree': False, 'datatables': False, 'chosen': False}}
+            'js': {'tableau': False, 'jstree': False, 'datatables': False, 'chosen': False},
+            'main_menu': {'main': True}}
 
 @route('/odbc/', method='GET')
 def odbc():
@@ -34,6 +35,7 @@ def js():
         info = def_page_info()
         info.update({'title': 'Tableau KDB',
                      'content': 'KDB Tableau Technology Demonstration Project'})
+        info['main_menu'].update({'main': False})
         return template("v2/startup", info)
     else:
         return template("js",
