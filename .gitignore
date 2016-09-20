@@ -8,5 +8,13 @@
 out
 .gitignore
 initrepository.bat
-src/static/vendors
-/src/settings.py
+src/settings.py
+
+src/static/vendors/*
+!src/static/vendors/jquery/dist
+!src/static/vendors/bootstrap/dist
+!src/static/vendors/jstree/dist
+!src/static/vendors/dataTables/
+!src/static/vendors/chosen
+
+

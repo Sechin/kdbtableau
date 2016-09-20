@@ -90,7 +90,7 @@ function datUrlPart(viz) {
 }
 
 function getSheet(id, viz) {
-    var par1 = (id >= -1) ? id : undefined;
+    var par1 = id;//(id >= -1) ? id : undefined;
     if (viz.v == undefined && (!viz.useId || par1 != undefined)) {
         $.ajax({
             url: siteCfg.local_url + "getticket/",
@@ -289,6 +289,8 @@ var pageStarter = {
     financeReady: function () {
         $().ready(function () {
             initChosen();
+            getSheet('%60RPG%60AA%60AAME', testFin);
         });
     }
 }
+

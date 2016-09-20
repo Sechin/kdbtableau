@@ -13,6 +13,11 @@
     height: 1px;
 }
 
+#test-fin {
+    width: 500px;
+    height: 500px;
+}
+
 #statistic-form2, #rt-tab2 {
     font-size: 11px;
 }

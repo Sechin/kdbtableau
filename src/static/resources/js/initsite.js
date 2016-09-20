@@ -214,3 +214,18 @@ for (var o in t_panels) {
             e.canRefresh = true;
     }
 }
+
+var testFin = {
+    p: '/views/FinanceDemo/qtChart?:refresh=yes',
+    o: 'test-fin',
+    ownCtr: false,
+    dat: false,
+    useId: true,
+    id: -1,
+    canRefresh: true,
+    v: undefined,
+    w: false,
+    cfg: null,
+    rt: {v: 0, id: {}},
+    attrDT: {}
+}
